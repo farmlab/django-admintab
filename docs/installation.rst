@@ -2,11 +2,9 @@
 Installation
 ============
 
+Django-admintab is not yet on pypi.
+
 At the command line::
 
-    $ easy_install django-admintab
+    $ pip install git+https://github.com/farmlab/django-admintab.git
 
-Or, if you have virtualenvwrapper installed::
-
-    $ mkvirtualenv django-admintab
-    $ pip install django-admintab

@@ -1,4 +1,4 @@
-##Example Project for admintab
+##Demo Project for admintab
 
 This example is provided as a convenience feature to allow potential users to try the app straight from the app repo without having to create a django project.
 
@@ -6,7 +6,7 @@ It can also be used to develop the app in place.
 
 To run this example, follow these instructions:
 
-1. Navigate to the `example` directory
+1. Navigate to the `demo` directory
 2. Install the requirements for the package:
 		
 		pip install -r requirements.txt

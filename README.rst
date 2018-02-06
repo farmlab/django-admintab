@@ -11,7 +11,13 @@ django-admintab
 .. image:: https://codecov.io/gh/farmlab/django-admintab/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/farmlab/django-admintab
 
-Provide tabs for change_list in the django admin interface
+Django-admintab package provides a simple tab feature within change_list views in the django admin interface.
+
+Uses cases:
+
+* Simple model dashboard
+* Displaying your data as graph or map
+* ...
 
 Documentation
 -------------
@@ -23,7 +29,7 @@ Quickstart
 
 Install django-admintab::
 
-    pip install django-admintab
+    pip install git+https://github.com/farmlab/django-admintab.git
 
 Add it to your `INSTALLED_APPS`:
 
@@ -35,23 +41,20 @@ Add it to your `INSTALLED_APPS`:
         ...
     )
 
-Add django-admintab's URL patterns:
-
-.. code-block:: python
-
-    from admintab import urls as admintab_urls
-
-
-    urlpatterns = [
-        ...
-        url(r'^', include(admintab_urls)),
-        ...
-    ]
-
 Features
 --------
 
-* TODO
+* make use of all functionalities of the standart django change_list view (filtering, searching ...)
+* no dependency
+
+TODO
+----
+
+* better documention
+* tests
+* and then release on pypi
+
+
 
 Running Tests
 -------------
@@ -66,6 +69,9 @@ Does the code actually work?
 
 Credits
 -------
+
+.. image:: _static/agrobioperigord.png
+
 
 Tools used in rendering this package:
 
