@@ -1,0 +1,64 @@
+
+.admintab-container {
+    position: relative;
+}
+
+.admintab-input {
+  clear: both;
+    display: none;
+}
+
+.admintab-container section.admintab-content {*/
+  clear: both;
+  padding-top: 10px;
+    display: none;
+}
+
+.admintab-content{
+    margin-top:30px;
+}
+
+.admintab-label, .admintab-tab {
+  font-size: 14px;
+  letter-spacing=0.5px;
+  display: block;
+  float: left;
+  padding: 5px 15px;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  background: #79AEC8;
+  margin-right: 1px;
+}
+
+
+/* FIXME: Something more generic?*/
+#admintab1:checked ~ #admintab-content1,
+#admintab2:checked ~ #admintab-content2,
+#admintab3:checked ~ #admintab-content3,
+#admintab4:checked ~ #admintab-content4,
+#admintab5:checked ~ #admintab-content5 {
+  display: block;
+  padding: 0px;
+  color: #999;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+
+
+.admintab-container [id^="admintab"]:checked + .admintab-label {
+  /*box-shadow: inset 0 3px #F5DD5D;*/
+  background: #417690;
+  color: #F5DD5D;
+}
+
+
+div.admintab-container > section.admintab-content > div.results,
+div.admintab-container > section.admintab-content > .paginator,
+div.admintab-container > section.admintab-content > div.actions{
+    margin-right: 0px;
+    background: red;
+}
+
+

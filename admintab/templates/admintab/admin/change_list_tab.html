@@ -1,0 +1,29 @@
+{% extends "admintab/admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block changelist-form %}
+
+<form id="changelist-form" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
+    {% if cl.formset %}
+    <div>{{ cl.formset.management_form }}</div>
+    {% endif %}
+
+
+    <div class="admintab-container {% if cl.has_filters %} results {% endif %}">
+
+        {% for title_tab, tpl_tab in admintab %}
+            <input class="admintab-input" id="admintab{{ forloop.counter }}" type="radio" name="tabs">
+            <label class="admintab-label" for="admintab{{ forloop.counter }}"><span>{{ title_tab  }}</span></label>
+        {% endfor %}
+
+        {% for title_tab, tpl_tab in admintab %}
+            <section id="admintab-content{{ forloop.counter }}" class="admintab-content">
+                {% include tpl_tab %} 
+            </section>
+        {% endfor %}
+
+    </div>
+
+</form>
+
+{% endblock %}

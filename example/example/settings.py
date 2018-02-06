@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # if your app has other dependencies that need to be added to the site
     # they should be added here
+    'tabbed',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -118,3 +119,32 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+import logging.config
+
+LOGGING_CONFIG = None
+logging.config.dictConfig({
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'console': {
+                    # exact format is not important, this is the minimum information
+                    'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                },
+            },
+            'handlers': {
+                'console': {
+                    'class': 'logging.StreamHandler',
+                    'formatter':'console'
+                },
+            },
+            'loggers':{
+                'admintab': {
+                    'level': 'DEBUG',
+                    'handlers': ['console'],
+                    'propagate': True,
+                },
+            },
+        })
+
