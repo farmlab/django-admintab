@@ -70,7 +70,7 @@ Does the code actually work?
 Credits
 -------
 
-.. image:: _static/agrobioperigord.png
+.. image:: https://github.com/farmlab/django-admintab/blob/master/docs/_static/agrobioperigord.png
 
 
 Tools used in rendering this package:
