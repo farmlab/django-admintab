@@ -1,6 +1,6 @@
 {% load i18n admin_urls static admin_list %}
 
-{% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+
 <h1>{{ tab2 }}</h1>
 {% for item in cl.queryset %}
 <p> {{ item.name }} <p>
