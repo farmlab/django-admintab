@@ -31,35 +31,17 @@ class ChangeListAdminMixin(admin.ModelAdmin):
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
-        """
+"""
         The 'change list' admin view for this model.
         """
         from django.contrib.admin.views.main import ERROR_FLAG
         opts = self.model._meta
         app_label = opts.app_label
-        if not self.has_change_permission(request, None):
+        if not self.has_view_or_change_permission(request):
             raise PermissionDenied
 
-        list_display = self.get_list_display(request)
-        list_display_links = self.get_list_display_links(request, list_display)
-        list_filter = self.get_list_filter(request)
-        search_fields = self.get_search_fields(request)
-        list_select_related = self.get_list_select_related(request)
-
-        # Check actions to see if any are available on this changelist
-        actions = self.get_actions(request)
-        if actions:
-            # Add the action checkboxes if there are any actions available.
-            list_display = ['action_checkbox'] + list(list_display)
-
-        ChangeList = self.get_changelist(request)
         try:
-            cl = ChangeList(
-                request, self.model, list_display,
-                list_display_links, list_filter, self.date_hierarchy,
-                search_fields, list_select_related, self.list_per_page,
-                self.list_max_show_all, self.list_editable, self,
-            )
+            cl = self.get_changelist_instance(request)
         except IncorrectLookupParameters:
             # Wacky lookup parameters were given, so redirect to the main
             # changelist page, without parameters, and pass an 'invalid=1'
@@ -67,7 +49,7 @@ class ChangeListAdminMixin(admin.ModelAdmin):
             # and the 'invalid=1' parameter was already in the query string,
             # something is screwed up with the database, so display an error
             # page.
-            if ERROR_FLAG in request.GET.keys():
+            if ERROR_FLAG in request.GET:
                 return SimpleTemplateResponse('admin/invalid_setup.html', {
                     'title': _('Database error'),
                 })
@@ -80,6 +62,7 @@ class ChangeListAdminMixin(admin.ModelAdmin):
         action_failed = False
         selected = request.POST.getlist(helpers.ACTION_CHECKBOX_NAME)
 
+        actions = self.get_actions(request)
         # Actions with no confirmation
         if (actions and request.method == 'POST' and
                 'index' in request.POST and '_save' not in request.POST):
@@ -119,8 +102,11 @@ class ChangeListAdminMixin(admin.ModelAdmin):
 
         # Handle POSTed bulk-edit data.
         if request.method == 'POST' and cl.list_editable and '_save' in request.POST:
+            if not self.has_change_permission(request):
+                raise PermissionDenied
             FormSet = self.get_changelist_formset(request)
-            formset = cl.formset = FormSet(request.POST, request.FILES, queryset=self.get_queryset(request))
+            modified_objects = self._get_list_editable_queryset(request, FormSet.get_default_prefix())
+            formset = cl.formset = FormSet(request.POST, request.FILES, queryset=modified_objects)
             if formset.is_valid():
                 changecount = 0
                 for form in formset.forms:
@@ -133,25 +119,20 @@ class ChangeListAdminMixin(admin.ModelAdmin):
                         changecount += 1
 
                 if changecount:
-                    if changecount == 1:
-                        name = force_text(opts.verbose_name)
-                    else:
-                        name = force_text(opts.verbose_name_plural)
-                    msg = ungettext(
+                    msg = ngettext(
                         "%(count)s %(name)s was changed successfully.",
                         "%(count)s %(name)s were changed successfully.",
                         changecount
                     ) % {
                         'count': changecount,
-                        'name': name,
-                        'obj': force_text(obj),
+                        'name': model_ngettext(opts, changecount),
                     }
                     self.message_user(request, msg, messages.SUCCESS)
 
                 return HttpResponseRedirect(request.get_full_path())
 
         # Handle GET -- construct a formset for display.
-        elif cl.list_editable:
+        elif cl.list_editable and self.has_change_permission(request):
             FormSet = self.get_changelist_formset(request)
             formset = cl.formset = FormSet(queryset=cl.result_list)
 
@@ -169,33 +150,34 @@ class ChangeListAdminMixin(admin.ModelAdmin):
         else:
             action_form = None
 
-        selection_note_all = ungettext(
+        selection_note_all = ngettext(
             '%(total_count)s selected',
             'All %(total_count)s selected',
             cl.result_count
         )
 
-        context = dict(
-            self.admin_site.each_context(request),
-            module_name=force_text(opts.verbose_name_plural),
-            selection_note=_('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
-            selection_note_all=selection_note_all % {'total_count': cl.result_count},
-            title=cl.title,
-            is_popup=cl.is_popup,
-            to_field=cl.to_field,
-            cl=cl,
-            media=media,
-            has_add_permission=self.has_add_permission(request),
-            opts=cl.opts,
-            action_form=action_form,
-            actions_on_top=self.actions_on_top,
-            actions_on_bottom=self.actions_on_bottom,
-            actions_selection_counter=self.actions_selection_counter,
-            preserved_filters=self.get_preserved_filters(request),
-        )
-        context.update(extra_context or {})
+        context = {
+            **self.admin_site.each_context(request),
+            'module_name': str(opts.verbose_name_plural),
+            'selection_note': _('0 of %(cnt)s selected') % {'cnt': len(cl.result_list)},
+            'selection_note_all': selection_note_all % {'total_count': cl.result_count},
+            'title': cl.title,
+            'is_popup': cl.is_popup,
+            'to_field': cl.to_field,
+            'cl': cl,
+            'media': media,
+            'has_add_permission': self.has_add_permission(request),
+            'opts': cl.opts,
+            'action_form': action_form,
+            'actions_on_top': self.actions_on_top,
+            'actions_on_bottom': self.actions_on_bottom,
+            'actions_selection_counter': self.actions_selection_counter,
+            'preserved_filters': self.get_preserved_filters(request),
+            **(extra_context or {}),
+        }
 
         request.current_app = self.admin_site.name
+
 
         # Call the changelisttab funtion
         context["admintab"] =self.change_list_tab
