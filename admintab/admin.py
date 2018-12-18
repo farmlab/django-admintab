@@ -31,7 +31,7 @@ class ChangeListAdminMixin(admin.ModelAdmin):
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
-"""
+        """
         The 'change list' admin view for this model.
         """
         from django.contrib.admin.views.main import ERROR_FLAG
