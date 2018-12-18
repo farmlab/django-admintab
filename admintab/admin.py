@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.contrib.admin import helpers
-from django.utils.translation import ugettext as _, ungettext
+from django.utils.translation import gettext as _, ngettext
 from django.utils.encoding import force_text
 from django.template.response import TemplateResponse
 
