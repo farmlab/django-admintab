@@ -12,10 +12,13 @@ csrf_protect_m = method_decorator(csrf_protect)
 import logging
 LOGGER = logging.getLogger("admintab")
 
+class IncorrectLookupParameters(Exception):
+    pass
+
 class ChangeListAdminMixin(admin.ModelAdmin):
     change_list_template = "admintab/admin/change_list_tab.html"
     change_list_tab = [("table", "admintab/admin/change_list_base.html")]
-    
+
     class Media:
         css = {'all': ('admin/css/admintab.css',)}
         js = ["admin/js/admintab.js"]
@@ -194,7 +197,7 @@ class ChangeListAdminMixin(admin.ModelAdmin):
 
         request.current_app = self.admin_site.name
 
-        # Call the changelisttab funtion 
+        # Call the changelisttab funtion
         context["admintab"] =self.change_list_tab
         request, context =  self.changelisttab(request, context)
 
@@ -203,4 +206,3 @@ class ChangeListAdminMixin(admin.ModelAdmin):
             'admin/%s/change_list.html' % app_label,
             'admin/change_list.html'
         ], context)
-
